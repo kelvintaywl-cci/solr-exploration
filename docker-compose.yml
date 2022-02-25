@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  index:
+    image: solr:5.3.1
+    volumes:
+      - "./vendor/bundle/ruby/2.6.0/gems/sunspot_solr-2.5.0/solr/solr:/opt/solr/server/solr"
+    ports:
+      - 8983:8983
+  db:
+    image: cimg/postgres:13.5
+    environment:
+      POSTGRES_DB: circle-test_test
+      POSTGRES_USER: root
+    ports:
+      - 5432:5432

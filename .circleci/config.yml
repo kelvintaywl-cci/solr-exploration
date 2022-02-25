@@ -1,0 +1,32 @@
+version: 2.1
+
+jobs:
+  spinup:
+    machine:
+      image: ubuntu-2004:202111-02
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          name: install ruby 2.6.3
+          command: |
+            rvm install 2.6.3
+            rvm use 2.6.3
+            ruby -v
+      - restore_cache:
+          key: circlev2-{{ checksum "Gemfile.lock" }}
+      - run:
+          name: install gems
+          command: |
+            gem install bundler --version '2.3.4'
+            bundle _2.3.4_ config set path vendor/bundle
+            bundle _2.3.4_ check || bundle _2.3.4_ install
+      - save_cache:
+          key: circlev2-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+
+workflows:
+  main:
+    jobs:
+      - spinup
