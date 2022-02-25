@@ -8,8 +8,15 @@ jobs:
     steps:
       - checkout
       - run:
+          name: check tools
+          command: |
+            which dockerize
+            which psql
+      - run:
           name: install ruby 2.6.3
           command: |
+            # rvm is available on machine
+            # See https://circleci.com/docs/2.0/docker-to-machine/#pre-installed-software
             rvm install 2.6.3
             rvm use 2.6.3
             ruby -v
