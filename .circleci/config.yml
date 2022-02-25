@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  docker: circleci/docker@2.0.2
+
 jobs:
   spinup:
     machine:
@@ -7,11 +10,6 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
-      - run:
-          name: check tools
-          command: |
-            which dockerize
-            which psql
       - run:
           name: install ruby 2.6.3
           command: |
@@ -32,6 +30,19 @@ jobs:
           key: circlev2-{{ checksum "Gemfile.lock" }}
           paths:
             - vendor/bundle
+      - run:
+          name: start Postgres and Solr (Docker)
+          command: |
+            docker-compose up -d
+      - docker/install-dockerize
+      - run:
+          name: wait for Solr server to be ready
+          command: |
+            dockerize -wait tcp://localhost:8983 -wait-retry-interval 2s -timeout 20s
+      - run:
+          name: wait for Postgres server to be ready
+          command: |
+            dockerize -wait tcp://localhost:5432 -wait-retry-interval 2s -timeout 20s
 
 workflows:
   main:
