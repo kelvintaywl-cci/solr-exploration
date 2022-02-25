@@ -16,13 +16,16 @@ jobs:
             # rvm is available on machine
             # See https://circleci.com/docs/2.0/docker-to-machine/#pre-installed-software
             rvm install 2.6.3
-            rvm use 2.6.3
+            rvm --default use 2.6.3
             ruby -v
       - restore_cache:
-          key: circlev2-{{ checksum "Gemfile.lock" }}
+          keys:
+            - circlev2-{{ checksum "Gemfile.lock" }}
+            - circlev2-
       - run:
           name: install gems
           command: |
+            rvm use 2.6.3
             gem install bundler --version '2.3.4'
             bundle _2.3.4_ config set path vendor/bundle
             bundle _2.3.4_ check || bundle _2.3.4_ install
